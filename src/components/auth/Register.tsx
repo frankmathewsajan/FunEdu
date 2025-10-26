@@ -24,8 +24,10 @@ const Register: React.FC = () => {
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signup } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,36 +42,58 @@ const Register: React.FC = () => {
     
     // Validate step 1 fields
     if (!formData.email || !formData.password || !formData.confirmPassword) {
-      alert('Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
     
     if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters long');
+      setError('Password must be at least 6 characters long');
       return;
     }
-    
+
+    setError('');
     setCurrentStep(2);
   };
 
-  const handleStep2Submit = (e: React.FormEvent) => {
+  const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate step 2 fields
     if (!formData.name || !formData.class || !formData.contact || !formData.organization) {
-      alert('Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
-    
-    // For now, just navigate to dashboard
-    // In a real app, you'd create the account here
-    login();
-    navigate('/dashboard');
+
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const result = await signup(
+        formData.email,
+        formData.password,
+        {
+          name: formData.name,
+          class: formData.class,
+          contact: formData.contact,
+          organization: formData.organization
+        }
+      );
+      
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Signup failed');
+      }
+    } catch {
+      setError('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const goBackToStep1 = () => {
@@ -133,6 +157,12 @@ const Register: React.FC = () => {
               />
             </div>
 
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+
             <button type="submit" className="btn-login">
               Next Step
             </button>
@@ -191,12 +221,18 @@ const Register: React.FC = () => {
               />
             </div>
 
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '10px' }}>
               <button type="button" className="btn-back" onClick={goBackToStep1}>
                 Back
               </button>
-              <button type="submit" className="btn-login" style={{ flex: 1 }}>
-                Create Account
+              <button type="submit" className="btn-login" style={{ flex: 1 }} disabled={isLoading}>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
             </div>
           </form>

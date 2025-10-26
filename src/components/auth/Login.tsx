@@ -13,6 +13,8 @@ const Login: React.FC = () => {
     email: '',
     password: ''
   });
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -24,12 +26,24 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just navigate to dashboard
-    // In a real app, you'd validate credentials here
-    login();
-    navigate('/dashboard');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed');
+      }
+    } catch {
+      setError('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -73,8 +87,14 @@ const Login: React.FC = () => {
             />
           </div>
 
-          <button type="submit" className="btn-login">
-            Sign In
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="btn-login" disabled={isLoading}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 

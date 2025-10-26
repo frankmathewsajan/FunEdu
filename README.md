@@ -186,8 +186,9 @@ npx prisma studio
 
 ##### **Verify Database Setup:**
 ```bash
-# Test database connection
-node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.\$connect().then(() => console.log('✅ Database connected!')).catch(e => console.log('❌ Error:', e.message)).finally(() => process.exit(0))"
+# Test database connection (run from backend directory)
+cd backend
+node -e "const { PrismaClient } = require('@prisma/client'); const prisma = new PrismaClient(); prisma.$connect().then(() => console.log('✅ Database connected!')).catch(e => console.log('❌ Error:', e.message)).finally(() => process.exit(0))"
 ```
 
 ### 🏃‍♂️ Running the Application
