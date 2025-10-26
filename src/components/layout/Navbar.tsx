@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navbar as BSNavbar, Nav, Container } from 'react-bootstrap';
 import { BookOpen, Home, Info, ShoppingBag, Briefcase, LogIn, LogOut } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);

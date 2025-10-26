@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge, ProgressBar } from 'react-bootstrap';
 import { 
   Calendar, 
@@ -8,6 +9,7 @@ import {
   Target,
   Star
 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface Activity {
   id: number;
@@ -27,8 +29,17 @@ interface Course {
 }
 
 const Dashboard: React.FC = () => {
+  const { isAuthenticated, user, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
   const [userStats] = useState({
-    name: 'Frank',
+    name: user?.full_name || 'Student',
     totalLectures: 300,
     completedLectures: 204,
     totalPoints: 2040,
@@ -61,6 +72,30 @@ const Dashboard: React.FC = () => {
 
   // Mock calendar data
   const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+
+  if (isLoading) {
+    return (
+      <div style={{ 
+        background: 'var(--warm-white)', 
+        minHeight: '100vh', 
+        paddingTop: '100px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <div style={{ 
