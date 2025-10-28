@@ -16,6 +16,7 @@ import {
 } from './components';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import LoginSuccess from './components/auth/LoginSuccess';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/login-success" element={<LoginSuccess />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </div>
